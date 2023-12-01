@@ -1,6 +1,7 @@
 const express = require('express')
 const Product =require('../models/Products.model')
 const Category = require('../models/Categories.model'); // Make sure to import the Category model
+const mongoose =require('mongoose')
 
 const router = express.Router();
 router.get(`/`, async (req,res)=>{
@@ -14,35 +15,49 @@ router.get(`/`, async (req,res)=>{
 res.json(productList)
 })
 
-router.post(`/`, async (req, res) =>{
-    console.log(req.body);
-    const category = await Category.findById(req.body.category);
-    if(!category) return res.status(400).send('Invalid Category')
+router.post(`/`, async (req, res) => {
+    try {
+        console.log('Category ID from request:', req.body.category);
+        if (!mongoose.Types.ObjectId.isValid(req.body.category)) {
+            return res.status(400).send('Invalid Category ID');
+        }
+        const category = await Category.findById(req.body.category);
 
-    //const file = req.file;
-   // if(!file) return res.status(400).send('No image in the request')
+        if (!category) {
+            return res.status(400).send('Invalid Category');
+        }
 
- //   const fileName = file.filename
-  //  const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
-    let product = new Product({
-        name: req.body.name,
-        description: req.body.description,
-        richDescription: req.body.richDescription,
-        image: req.body.image,// "http://localhost:3000/public/upload/image-2323232"
-        brand: req.body.brand,
-        price: req.body.price,
-        category: req.body.category,
-        countInStock: req.body.countInStock,
-        rating: req.body.rating,
-        numReviews: req.body.numReviews,
-        isFeatured: req.body.isFeatured,
-    })
+        // const file = req.file;
+        // if (!file) return res.status(400).send('No image in the request')
 
-    product = await product.save();
+        // const fileName = file.filename
+        // const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
 
-    if(!product) 
-    return res.status(500).send('The product cannot be created')
+        let product = new Product({
+            name: req.body.name,
+            description: req.body.description,
+            richDescription: req.body.richDescription,
+            image: req.body.image, // "http://localhost:3000/public/upload/image-2323232"
+            brand: req.body.brand,
+            price: req.body.price,
+            category: req.body.category,
+            countInStock: req.body.countInStock,
+            rating: req.body.rating,
+            numReviews: req.body.numReviews,
+            isFeatured: req.body.isFeatured,
+        });
 
-    res.send(product);
-})
+        product = await product.save();
+
+        if (!product) {
+            return res.status(500).send('The product cannot be created');
+        }
+
+        res.send(product);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
 module.exports = router;  // Export the model
