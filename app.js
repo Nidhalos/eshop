@@ -1,7 +1,8 @@
 const express=require('express')
-const cors = require('cors');
 
 const app = express();
+const cors = require('cors');
+
 const morgan =require('morgan')
 const mongoose =require('mongoose')
 const ProductRouter =require('./routers/products.routers')
@@ -16,7 +17,7 @@ app.use(morgan('tiny'))
 app.use(cors());
 app.options('*', cors())
 
-app.use(`${api}/product`,ProductRouter)
+app.use(`${api}/product`,ProductRouter);
 app.use(`${api}/categories`, categoriesRoutes);
 
 

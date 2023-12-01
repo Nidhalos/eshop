@@ -22,4 +22,6 @@ categorySchema.set('toJSON', {
     virtuals: true,
 });
 
-exports.Category = mongoose.model('categories', categorySchema);
+const Category = mongoose.model('categories', categorySchema);  // Corrected model name
+
+module.exports = Category;  // Export the model
