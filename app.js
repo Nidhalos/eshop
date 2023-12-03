@@ -3,6 +3,7 @@ const express=require('express')
 const app = express();
 const cors = require('cors');
 const auth =require('./helpers/jwt');
+const errorHandler = require('./helpers/error-handler');
 
 const morgan =require('morgan')
 const mongoose =require('mongoose')
@@ -14,12 +15,14 @@ require('dotenv/config')
 const api = process.env.API_URL
 const connexionDB =process.env.DB
 //midlleware
+app.use(cors());
+app.options('*', cors())
 app.use(express.json())
 app.use(morgan('tiny'))
 app.use(auth);
+app.use(errorHandler);
 
-app.use(cors());
-app.options('*', cors())
+
 
 app.use(`${api}/product`,ProductRouter);
 app.use(`${api}/categories`, categoriesRoutes);
